@@ -17,9 +17,11 @@ if (!process.env.BETTER_AUTH_URL) {
 // Frontend and backend are on different registrable domains once deployed
 // (e.g. localhost vs. netlify.app), not just different ports like in local
 // dev -- browsers won't send a SameSite=Lax cookie on those cross-site fetch
-// calls. SameSite=None (which requires Secure, i.e. HTTPS) fixes that; it's
-// only safe to turn on once BETTER_AUTH_URL is actually served over https.
-const isCrossSiteDeployment = process.env.BETTER_AUTH_URL.startsWith('https://');
+// calls. SameSite=None (which requires Secure, i.e. HTTPS) fixes that.
+// `NETLIFY` is set to 'true' automatically by Netlify's own build/runtime
+// for every deploy context -- unlike BETTER_AUTH_URL, it can't be typo'd or
+// left stale in the dashboard, so it's the more reliable signal here.
+const isCrossSiteDeployment = process.env.NETLIFY === 'true';
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
