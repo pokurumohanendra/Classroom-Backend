@@ -70,6 +70,9 @@ web_modules/
 .env.*
 !.env.example
 
+# APM Insight agent config -- contains a real license key
+apminsightnode.json
+
 # Claude Code local notes
 CLAUDE.md
 

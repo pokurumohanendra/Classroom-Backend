@@ -1,8 +1,11 @@
-declare global{
+declare global {
   namespace Express {
     interface Request {
-      user?:{
-        role?:"admin" | "teacher" |"student";
+      user?: {
+        id: string;
+        name: string;
+        email: string;
+        role: UserRoles;
       };
     }
   }

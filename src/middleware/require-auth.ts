@@ -2,20 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { fromNodeHeaders } from 'better-auth/node';
 import { auth } from '../lib/auth';
 
-export type SessionUser = {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-};
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: SessionUser;
-    }
-  }
-}
+// `req.user`'s shape is declared once, globally, in src/express.d.ts.
 
 export const requireAuth = async (req: Request, res: Response, next: NextFunction) => {
   const session = await auth.api.getSession({ headers: fromNodeHeaders(req.headers) });
@@ -24,7 +11,7 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
     return res.status(401).json({ error: 'Unauthorized' });
   }
 
-  req.user = session.user as unknown as SessionUser;
+  req.user = session.user as unknown as NonNullable<Request['user']>;
   next();
 };
 
