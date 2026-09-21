@@ -14,6 +14,13 @@ if (!process.env.BETTER_AUTH_URL) {
   throw new Error('BETTER_AUTH_URL is not set in .env file');
 }
 
+// Frontend and backend are on different registrable domains once deployed
+// (e.g. localhost vs. netlify.app), not just different ports like in local
+// dev -- browsers won't send a SameSite=Lax cookie on those cross-site fetch
+// calls. SameSite=None (which requires Secure, i.e. HTTPS) fixes that; it's
+// only safe to turn on once BETTER_AUTH_URL is actually served over https.
+const isCrossSiteDeployment = process.env.BETTER_AUTH_URL.startsWith('https://');
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
@@ -22,6 +29,12 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
   trustedOrigins: [process.env.FRONTEND_URL],
+  advanced: isCrossSiteDeployment
+    ? {
+        useSecureCookies: true,
+        defaultCookieAttributes: { sameSite: 'none', secure: true },
+      }
+    : undefined,
   emailAndPassword: {
     enabled: true,
   },
