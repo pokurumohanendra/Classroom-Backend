@@ -3,12 +3,10 @@ import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { db } from '../db';
 import * as authSchema from '../schema/auth';
 import { teachers, students } from '../schema/app';
+import { frontendOrigins } from './frontend-origins';
 
 if (!process.env.BETTER_AUTH_SECRET) {
   throw new Error('BETTER_AUTH_SECRET is not set in .env file');
-}
-if (!process.env.FRONTEND_URL) {
-  throw new Error('FRONTEND_URL is not set in .env file');
 }
 if (!process.env.BETTER_AUTH_URL) {
   throw new Error('BETTER_AUTH_URL is not set in .env file');
@@ -30,7 +28,7 @@ export const auth = betterAuth({
   }),
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
-  trustedOrigins: [process.env.FRONTEND_URL],
+  trustedOrigins: frontendOrigins,
   advanced: isCrossSiteDeployment
     ? {
         useSecureCookies: true,

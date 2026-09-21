@@ -11,12 +11,12 @@ import teachersRouter from "./routes/teachers";
 import studentsRouter from "./routes/students";
 import cors from "cors";
 import securityMiddleware from "./middleware/security";
+import { frontendOrigins } from "./lib/frontend-origins";
 
 const app = express();
 
-if (!process.env.FRONTEND_URL) throw new Error('FRONTEND_URL is not set in .env file')
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: frontendOrigins,
   methods:['GET','POST','PUT','DELETE'],
   credentials:true
 }))
