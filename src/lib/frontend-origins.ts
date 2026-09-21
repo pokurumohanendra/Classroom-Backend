@@ -5,5 +5,8 @@ if (!process.env.FRONTEND_URL) {
 }
 
 export const frontendOrigins = process.env.FRONTEND_URL.split(',')
-  .map((origin) => origin.trim())
+  // Origin headers never carry a trailing slash or path, but it's an easy
+  // typo to make when pasting a URL into the dashboard -- strip it so a
+  // stray "/" doesn't silently break the exact-string CORS/origin match.
+  .map((origin) => origin.trim().replace(/\/+$/, ''))
   .filter(Boolean);
