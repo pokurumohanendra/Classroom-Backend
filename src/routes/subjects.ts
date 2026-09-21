@@ -2,9 +2,10 @@ import express from "express";
 import { db } from "../db";
 import { sql, and, eq, or, ilike, desc, getTableColumns } from "drizzle-orm";
 import { departments, subjects } from "../schema/app";
+import { requireAuth } from "../middleware/require-auth";
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
   try {
     const { search, department, page = 1, limit = 10 } = req.query;
 
@@ -39,7 +40,7 @@ router.get("/", async (req, res) => {
     const subjectsList = await db
       .select({
         ...getTableColumns(subjects),
-        departmentName: { ...getTableColumns(departments) },
+        department: { ...getTableColumns(departments) },
       })
       .from(subjects)
       .leftJoin(departments, eq(subjects.departmentId, departments.id))
