@@ -5,6 +5,18 @@
 [functions]
   node_bundler = "esbuild"
 
+# Set directly here (not the dashboard) so it's guaranteed to be present at
+# function runtime, not just during the build -- used to switch the session
+# cookie to SameSite=None for the cross-site frontend/backend setup.
+[context.production.environment]
+  IS_DEPLOYED = "true"
+
+[context.deploy-preview.environment]
+  IS_DEPLOYED = "true"
+
+[context.branch-deploy.environment]
+  IS_DEPLOYED = "true"
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api"
