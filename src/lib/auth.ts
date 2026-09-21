@@ -10,6 +10,9 @@ if (!process.env.BETTER_AUTH_SECRET) {
 if (!process.env.FRONTEND_URL) {
   throw new Error('FRONTEND_URL is not set in .env file');
 }
+if (!process.env.BETTER_AUTH_URL) {
+  throw new Error('BETTER_AUTH_URL is not set in .env file');
+}
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -17,7 +20,7 @@ export const auth = betterAuth({
     schema: authSchema,
   }),
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+  baseURL: process.env.BETTER_AUTH_URL,
   trustedOrigins: [process.env.FRONTEND_URL],
   emailAndPassword: {
     enabled: true,
