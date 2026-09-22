@@ -3,7 +3,12 @@ import type { Request, Response, NextFunction } from "express";
 import { ArcjetNodeRequest, slidingWindow } from "@arcjet/node";
 
 const securityMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-  if (process.env.NODE_ENV === 'test') return next();
+  // Vercel/Netlify set NODE_ENV=production on deployed builds, so this only
+  // relaxes rate limiting/bot checks for local `npm run dev` (and test) --
+  // production traffic is unaffected. A rich admin SPA naturally fires many
+  // requests per page (list + several dropdown selects + dashboard fetches),
+  // which blew through the 20/min admin limit during normal local browsing.
+  if (process.env.NODE_ENV !== 'production') return next();
 
   try {
     const role: RateLimitRole = req.user?.role ?? 'guest';
