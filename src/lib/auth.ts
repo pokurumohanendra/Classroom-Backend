@@ -16,15 +16,12 @@ if (!process.env.BETTER_AUTH_URL) {
 // (e.g. netlify.app subdomains are each their own "site") -- browsers won't
 // send a SameSite=Lax cookie on those cross-site fetch calls. SameSite=None
 // (which requires Secure, i.e. HTTPS) fixes that.
-// Both process.env.NETLIFY and a netlify.toml context-environment var
-// (IS_DEPLOYED) turned out to NOT be reliably present at actual Function
-// runtime (only during the build step), despite being documented/expected
-// to work -- confirmed by direct testing against the live deployment.
-// BETTER_AUTH_URL, by contrast, is demonstrably read correctly at runtime
-// (the whole app depends on it and works), so it's used here instead, and
-// the check defaults to the secure/cross-site behavior unless it explicitly
-// points at localhost.
-const isCrossSiteDeployment = !process.env.BETTER_AUTH_URL.includes('localhost');
+// IS_DEPLOYED is set directly in netlify/functions/api.ts -- the one file
+// that only ever runs as the deployed function, never for local dev -- so
+// this can't drift out of sync with a dashboard-configured value the way
+// three prior attempts (a platform env var, a netlify.toml context var,
+// and BETTER_AUTH_URL's content) all did.
+const isCrossSiteDeployment = process.env.IS_DEPLOYED === 'true';
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
