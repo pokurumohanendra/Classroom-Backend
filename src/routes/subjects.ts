@@ -1,8 +1,8 @@
 import express from "express";
-import { db } from "../db";
+import { db } from "../db/index.js";
 import { sql, and, eq, or, ilike, desc, getTableColumns } from "drizzle-orm";
-import { departments, subjects } from "../schema/app";
-import { requireAuth } from "../middleware/require-auth";
+import { departments, subjects } from "../schema/app.js";
+import { requireAuth } from "../middleware/require-auth.js";
 const router = express.Router();
 
 router.get("/", requireAuth, async (req, res) => {

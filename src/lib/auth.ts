@@ -1,9 +1,9 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { db } from '../db';
-import * as authSchema from '../schema/auth';
-import { teachers, students } from '../schema/app';
-import { frontendOrigins } from './frontend-origins';
+import { db } from '../db/index.js';
+import * as authSchema from '../schema/auth.js';
+import { teachers, students } from '../schema/app.js';
+import { frontendOrigins } from './frontend-origins.js';
 
 if (!process.env.BETTER_AUTH_SECRET) {
   throw new Error('BETTER_AUTH_SECRET is not set in .env file');
@@ -16,11 +16,12 @@ if (!process.env.BETTER_AUTH_URL) {
 // (e.g. netlify.app subdomains are each their own "site") -- browsers won't
 // send a SameSite=Lax cookie on those cross-site fetch calls. SameSite=None
 // (which requires Secure, i.e. HTTPS) fixes that.
-// IS_DEPLOYED is set directly in netlify/functions/api.ts -- the one file
-// that only ever runs as the deployed function, never for local dev -- so
-// this can't drift out of sync with a dashboard-configured value the way
-// three prior attempts (a platform env var, a netlify.toml context var,
-// and BETTER_AUTH_URL's content) all did.
+// IS_DEPLOYED is set directly in each platform's function entrypoint
+// (netlify/functions/api.ts, api/[...path].ts) -- the files that only ever
+// run when actually deployed, never for local dev -- so this can't drift
+// out of sync with a dashboard-configured value the way three prior
+// attempts (a platform env var, a netlify.toml context var, and
+// BETTER_AUTH_URL's content) all did.
 const isCrossSiteDeployment = process.env.IS_DEPLOYED === 'true';
 
 export const auth = betterAuth({
