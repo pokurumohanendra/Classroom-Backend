@@ -1,6 +1,6 @@
 import express from "express";
 import { v2 as cloudinary } from "cloudinary";
-import { requireAuth } from "../middleware/require-auth";
+import { requireAuth } from "../middleware/require-auth.js";
 
 if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
   throw new Error('CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET must be set in .env file');

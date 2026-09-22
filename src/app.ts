@@ -1,17 +1,17 @@
 import express from "express";
 import { toNodeHandler } from "better-auth/node";
-import { auth } from "./lib/auth";
-import subjectsRouter from "./routes/subjects";
-import departmentsRouter from "./routes/departments";
-import uploadsRouter from "./routes/uploads";
-import classesRouter from "./routes/classes";
-import enrollmentsRouter from "./routes/enrollments";
-import usersRouter from "./routes/users";
-import teachersRouter from "./routes/teachers";
-import studentsRouter from "./routes/students";
+import { auth } from "./lib/auth.js";
+import subjectsRouter from "./routes/subjects.js";
+import departmentsRouter from "./routes/departments.js";
+import uploadsRouter from "./routes/uploads.js";
+import classesRouter from "./routes/classes.js";
+import enrollmentsRouter from "./routes/enrollments.js";
+import usersRouter from "./routes/users.js";
+import teachersRouter from "./routes/teachers.js";
+import studentsRouter from "./routes/students.js";
 import cors from "cors";
-import securityMiddleware from "./middleware/security";
-import { frontendOrigins } from "./lib/frontend-origins";
+import securityMiddleware from "./middleware/security.js";
+import { frontendOrigins } from "./lib/frontend-origins.js";
 
 const app = express();
 

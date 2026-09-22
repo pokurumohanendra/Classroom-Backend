@@ -1,10 +1,10 @@
 import express from "express";
 import crypto from "node:crypto";
-import { db } from "../db";
+import { db } from "../db/index.js";
 import { sql, and, eq, ilike } from "drizzle-orm";
-import { user, roleEnum } from "../schema/auth";
-import { auth } from "../lib/auth";
-import { requireAuth, requireRole } from "../middleware/require-auth";
+import { user, roleEnum } from "../schema/auth.js";
+import { auth } from "../lib/auth.js";
+import { requireAuth, requireRole } from "../middleware/require-auth.js";
 
 const router = express.Router();
 

@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { fromNodeHeaders } from 'better-auth/node';
-import { auth } from '../lib/auth';
+import { auth } from '../lib/auth.js';
 
 // `req.user`'s shape is declared once, globally, in src/express.d.ts.
 
