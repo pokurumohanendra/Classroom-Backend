@@ -1,9 +1,9 @@
 import express from "express";
-import { db } from "../db";
+import { db } from "../db/index.js";
 import { sql, and, eq, or, ilike, desc, getTableColumns } from "drizzle-orm";
-import { classes, subjects, teachers } from "../schema/app";
-import { user } from "../schema/auth";
-import { requireAuth, requireRole } from "../middleware/require-auth";
+import { classes, subjects, teachers } from "../schema/app.js";
+import { user } from "../schema/auth.js";
+import { requireAuth, requireRole } from "../middleware/require-auth.js";
 
 const router = express.Router();
 
