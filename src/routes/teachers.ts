@@ -7,6 +7,16 @@ import { requireAuth } from "../middleware/require-auth.js";
 
 const router = express.Router();
 
+router.get("/me", requireAuth, async (req, res) => {
+  try {
+    const [teacher] = await db.select().from(teachers).where(eq(teachers.userId, req.user!.id));
+    if (!teacher) return res.status(404).json({ error: "Not a teacher" });
+    res.json({ data: teacher });
+  } catch (err) {
+    res.status(500).json({ error: "Error occurred while fetching teacher profile" });
+  }
+});
+
 router.get("/", requireAuth, async (_req, res) => {
   try {
     const teachersList = await db

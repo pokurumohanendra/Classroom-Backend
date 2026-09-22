@@ -1,8 +1,9 @@
 import express from "express";
 import crypto from "node:crypto";
 import { db } from "../db/index.js";
-import { sql, and, eq, ilike } from "drizzle-orm";
+import { sql, and, eq, gte, ilike } from "drizzle-orm";
 import { user, roleEnum } from "../schema/auth.js";
+import { teachers, students, classes, enrollments } from "../schema/app.js";
 import { auth } from "../lib/auth.js";
 import { requireAuth, requireRole } from "../middleware/require-auth.js";
 
@@ -12,7 +13,7 @@ router.use(requireAuth, requireRole("admin"));
 
 router.get("/", async (req, res) => {
   try {
-    const { role, search, page = 1, limit = 10 } = req.query;
+    const { role, search, joinedAfter, page = 1, limit = 10 } = req.query;
 
     const currentPage = Math.max(1, +page);
     const limitPerPage = Math.max(1, +limit);
@@ -23,6 +24,10 @@ router.get("/", async (req, res) => {
       filterConditions.push(eq(user.role, role as (typeof roleEnum.enumValues)[number]));
     }
     if (search) filterConditions.push(ilike(user.name, `%${search}%`));
+    if (joinedAfter) {
+      const date = new Date(String(joinedAfter));
+      if (!Number.isNaN(date.getTime())) filterConditions.push(gte(user.createdAt, date));
+    }
     const whereClause = filterConditions.length > 0 ? and(...filterConditions) : undefined;
 
     const countResult = await db.select({ count: sql<number>`count(*)` }).from(user).where(whereClause);
@@ -48,7 +53,38 @@ router.get("/:id", async (req, res) => {
   try {
     const [result] = await db.select().from(user).where(eq(user.id, req.params.id));
     if (!result) return res.status(404).json({ error: "User not found" });
-    res.json({ data: result });
+
+    let profile: Record<string, unknown> | null = null;
+
+    if (result.role === "teacher") {
+      const [teacherRow] = await db.select({ id: teachers.id }).from(teachers).where(eq(teachers.userId, result.id));
+      if (teacherRow) {
+        const classesList = await db
+          .select({ id: classes.id, name: classes.name, status: classes.status })
+          .from(classes)
+          .where(eq(classes.teacherId, teacherRow.id))
+          .limit(10);
+        profile = { teacherId: teacherRow.id, classes: classesList };
+      }
+    } else if (result.role === "student") {
+      const [studentRow] = await db.select({ id: students.id }).from(students).where(eq(students.userId, result.id));
+      if (studentRow) {
+        const enrollmentsList = await db
+          .select({
+            id: enrollments.id,
+            classId: enrollments.classId,
+            className: classes.name,
+            enrolledAt: enrollments.enrolledAt,
+          })
+          .from(enrollments)
+          .innerJoin(classes, eq(enrollments.classId, classes.id))
+          .where(eq(enrollments.studentId, studentRow.id))
+          .limit(10);
+        profile = { studentId: studentRow.id, enrollments: enrollmentsList };
+      }
+    }
+
+    res.json({ data: { ...result, profile } });
   } catch (err) {
     res.status(500).json({ error: "Error occurred while fetching user" });
   }

@@ -9,6 +9,8 @@ import enrollmentsRouter from "./routes/enrollments.js";
 import usersRouter from "./routes/users.js";
 import teachersRouter from "./routes/teachers.js";
 import studentsRouter from "./routes/students.js";
+import dashboardRouter from "./routes/dashboard.js";
+import searchRouter from "./routes/search.js";
 import cors from "cors";
 import securityMiddleware from "./middleware/security.js";
 import { frontendOrigins } from "./lib/frontend-origins.js";
@@ -37,5 +39,7 @@ app.use("/api/enrollments", enrollmentsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/teachers", teachersRouter);
 app.use("/api/students", studentsRouter);
+app.use("/api/dashboard", dashboardRouter);
+app.use("/api/search", searchRouter);
 
 export default app;
